@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addTodo } from "./actions/todos";
+import { Creators as TodosActions } from "./store/ducks/todos";
 
 export default function TodoList() {
   const [newTodo, setNewTodo] = useState("");
@@ -10,16 +10,32 @@ export default function TodoList() {
   const todos = useSelector((state) => state.todos);
 
   function addNewTodo() {
-    dispatch(addTodo(newTodo));
+    dispatch(TodosActions.addTodo(newTodo));
 
     setNewTodo("");
+  }
+
+  function removeTodoList(id) {
+    dispatch(TodosActions.removeTodo(id));
+  }
+
+  function toggleTodoList(id) {
+    dispatch(TodosActions.toggleTodo(id));
   }
 
   return (
     <>
       <ul>
         {todos.map((todo) => (
-          <li key={todo.id}>{todo.text}</li>
+          <div key={todo.id} style={{ display: "flex", padding: "20px" }}>
+            <li>
+              {todo.text}: {todo.toggle ? "Concluído" : "Não Concluído"}
+            </li>
+            <button onClick={() => removeTodoList(todo.id)}>
+              Remover ToDo
+            </button>
+            <button onClick={() => toggleTodoList(todo.id)}>Toggle ToDo</button>
+          </div>
         ))}
       </ul>
 
