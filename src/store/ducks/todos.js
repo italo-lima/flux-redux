@@ -1,42 +1,92 @@
-import { createActions, createReducer } from "reduxsauce";
+import { all, takeLatest, call, put, select } from "redux-saga/effects";
 
-/*
- * Criando as actions e types
+// simulando uma requisição api
+function apiGet(text, length) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(text + " bom: " + length);
+    }, 2000);
+  });
+}
+
+// ToDos
+export const Types_Todos = {
+  ADD_TODO_REQUEST: "ADD_TODO_REQUEST",
+  REMOVE_TODO_REQUEST: "REMOVE_TODO_REQUEST",
+
+  ADD_TODO_SUCCESS: "ADD_TODO_SUCCESS",
+  REMOVE_TODO_SUCCESS: "REMOVE_TODO_SUCCESS",
+};
+
+/**
+ * Actions
  */
 
-export const { Types, Creators } = createActions({
-  addTodo: ["text"],
-  toggleTodo: ["id"],
-  removeTodo: ["id"],
-});
+export function addTodo(text) {
+  return {
+    type: Types_Todos.ADD_TODO_REQUEST,
+    payload: { text },
+  };
+}
 
-console.log(Types, Creators);
+export function removeTodo(id) {
+  return {
+    type: Types_Todos.REMOVE_TODO_REQUEST,
+    payload: { id },
+  };
+}
 
-/*
- * Criando os reducers handlers
+/**
+ * Sagas
  */
 
+export function* addTodoSaga({ payload }) {
+  try {
+    // select busca informações do estado
+    const todos = yield select((state) => state.todos);
+
+    const response = yield call(apiGet, payload.text, todos.length);
+
+    yield put({
+      type: Types_Todos.ADD_TODO_SUCCESS,
+      payload: { text: response },
+    });
+  } catch {
+    yield put({
+      type: "ERROR",
+    });
+  }
+}
+
+export function* removeTodoSaga({ payload }) {
+  yield put({
+    type: Types_Todos.REMOVE_TODO_SUCCESS,
+    payload: { id: payload.id },
+  });
+}
+
+/**
+ * Reducers
+ */
 const INITIAL_STATE = [];
 
-const add = (state = INITIAL_STATE, action) => [
-  ...state,
-  { id: Math.random(), text: action.text, toggle: false },
-];
+export default (state = INITIAL_STATE, { type, payload }) => {
+  switch (type) {
+    case Types_Todos.ADD_TODO_SUCCESS:
+      return [
+        ...state,
+        { id: Math.random(), text: payload.text, toggle: false },
+      ];
 
-const toggle = (state = INITIAL_STATE, action) =>
-  state.map((todo) =>
-    todo.id === action.id ? { ...todo, toggle: !todo.toggle } : todo
-  );
+    case Types_Todos.REMOVE_TODO_SUCCESS:
+      return state.filter((todo) => todo.id !== payload.id);
 
-const remove = (state = INITIAL_STATE, action) =>
-  state.filter((todo) => todo.id !== action.id);
+    default:
+      return state;
+  }
+};
 
-/*
- * Criando as actions e types
- */
-
-export default createReducer(INITIAL_STATE, {
-  [Types.ADD_TODO]: add,
-  [Types.TOGGLE_TODO]: toggle,
-  [Types.REMOVE_TODO]: remove,
-});
+export const todos_sagas = all([
+  takeLatest(Types_Todos.ADD_TODO_REQUEST, addTodoSaga),
+  takeLatest(Types_Todos.REMOVE_TODO_REQUEST, removeTodoSaga),
+]);
