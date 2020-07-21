@@ -24,9 +24,7 @@ export default function TodoList() {
       <ul>
         {todos.map((todo) => (
           <div key={todo.id} style={{ display: "flex", padding: "20px" }}>
-            <li>
-              {todo.text}: {todo.toggle ? "Concluído" : "Não Concluído"}
-            </li>
+            <li>{todo.text}</li>
             <button onClick={() => removeTodoList(todo.id)}>
               Remover ToDo
             </button>

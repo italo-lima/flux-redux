@@ -1,14 +1,11 @@
 import { all, takeLatest, call, put, select } from "redux-saga/effects";
-import { useHistory } from "react-router-dom";
-
-const history = useHistory();
 
 // simulando uma requisição api
 function apiGet(text, length) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(text + " bom: " + length);
-    }, 2000);
+    }, 1000);
   });
 }
 
@@ -54,8 +51,6 @@ export function* addTodoSaga({ payload }) {
       type: Types_Todos.ADD_TODO_SUCCESS,
       payload: { text: response },
     });
-
-    history.push("/profile");
   } catch {
     yield put({
       type: "ERROR",
@@ -75,7 +70,7 @@ export function* removeTodoSaga({ payload }) {
  */
 const INITIAL_STATE = [];
 
-export default (state = INITIAL_STATE, { type, payload }) => {
+export default (state = INITIAL_STATE, { payload, type }) => {
   switch (type) {
     case Types_Todos.ADD_TODO_SUCCESS:
       return [
