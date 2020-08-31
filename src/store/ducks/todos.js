@@ -1,5 +1,5 @@
 import { all, takeLatest, call, put, select } from "redux-saga/effects";
-import { push } from "connected-react-router";
+import history from "../../services/history";
 
 // simulando uma requisição api
 function apiGet(text, length) {
@@ -53,7 +53,7 @@ export function* addTodoSaga({ payload }) {
       payload: { text: response },
     });
 
-    yield put(push("/profile"));
+    history.push("/profile");
   } catch {
     yield put({
       type: "ERROR",

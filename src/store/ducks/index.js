@@ -1,12 +1,9 @@
 import { combineReducers } from "redux";
 
-import { connectRouter } from "connected-react-router";
-
 import todos from "./todos";
 
-const createRootReducer = (history) =>
+const createRootReducer = () =>
   combineReducers({
-    router: connectRouter(history),
     todos,
   });
 

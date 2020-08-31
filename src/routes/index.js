@@ -1,22 +1,19 @@
 import React from "react";
-import { Route, Switch, BrowserRouter } from "react-router-dom";
-import { ConnectedRouter } from "connected-react-router";
+import { Route, Switch, Router } from "react-router-dom";
 
 import Profile from "../pages/Profile";
 import Dashboard from "../pages/DashBoard";
 
-import { history } from "../store";
+import history from "../services/history";
 
 const Routes = () => {
   return (
-    <ConnectedRouter history={history}>
-      <BrowserRouter>
-        <Switch>
-          <Route exact path="/" component={Dashboard} />
-          <Route path="/profile" component={Profile} />
-        </Switch>
-      </BrowserRouter>
-    </ConnectedRouter>
+    <Router history={history}>
+      <Switch>
+        <Route exact path="/" component={Dashboard} />
+        <Route path="/profile" component={Profile} />
+      </Switch>
+    </Router>
   );
 };
 
